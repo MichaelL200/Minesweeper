@@ -32,6 +32,15 @@ int main(int argc, char *argv[])
 
         // print board stats
         board_stats(&board);
+
+        // print board
+        board_print(&board);
+
+        // ask for a command
+        board_command(&board);
+
+        // free board memory
+        board_free(&board);
     }
 
     return EXIT_SUCCESS;

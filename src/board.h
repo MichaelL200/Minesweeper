@@ -35,11 +35,20 @@ extern Difficulty CUSTOM;
 // set difficulty
 Difficulty board_difficulty();
 
+// ask user for custom board
+void board_custom(Board* board);
+
 // initialize board
 Board board_init(Difficulty difficulty);
 
-// prints status of the board
+// print status of the board
 void board_stats(Board* board);
+
+// print board
+void board_print(Board* board);
+
+// ask for a command
+void board_command(Board* board);
 
 // free board memory
 void board_free(Board* board);

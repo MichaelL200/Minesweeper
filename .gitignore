@@ -1,8 +1,5 @@
-# Compiled object files
-*.o
-
-# Bin / Build directory
-/bin/
+# Object directory
+/obj/
 
 # Visual Studio Code settings
 .vscode/

@@ -1,4 +1,5 @@
 #include "file.h"
+#include "board.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -22,10 +23,14 @@ int main(int argc, char *argv[])
     {
         printf("\tNORMAL MODE\n");
 
-        printf("\tChoose a difficulty level:\n");
-        printf("\t1. Easy\n");
-        printf("\t2. Medium\n");
-        printf("\t3. Hard\n");
+        // get difficulty
+        Difficulty difficulty = board_difficulty();
+
+        // initialize board
+        Board board = board_init(difficulty);
+
+        // print board stats
+        board_stats(&board);
     }
 
     return EXIT_SUCCESS;

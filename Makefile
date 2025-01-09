@@ -5,7 +5,7 @@ EXEC = minesweeper
 LINK = saper
 
 SRC = $(wildcard src/*.c)
-OBJ = $(patsubst src/%.c, bin/%.o, $(SRC))
+OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
 all: $(EXEC) $(LINK)
 
@@ -15,7 +15,7 @@ $(EXEC): $(OBJ)
 $(LINK): $(EXEC)
 	ln -sf $(EXEC) $(LINK)
 
-bin/%.o: src/%.c
+obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 valgrind:

@@ -1,0 +1,17 @@
+# Compiled object files
+*.o
+
+# Bin / Build directory
+/bin/
+
+# Visual Studio Code settings
+.vscode/
+
+# Temporary and backup files
+*~
+*.swp
+*.tmp
+
+# Document files
+*.pdf
+*.docx

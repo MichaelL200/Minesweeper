@@ -52,45 +52,63 @@ int main(int argc, char *argv[])
     int opt;
     char* path = NULL;
 
-    // try to get the file path from the command line
+    // for -f option
     while((opt = getopt(argc, argv, "f:" )) != -1)
     {
+        // try to get the file path from the command line
         if(opt == 'f')
         {
             // get the argument value
             path = optarg;
-            printf("\tFile path: %s\n", path);
             process_path(path);
 
             // check if the file exists
             if(access(path, F_OK) == -1)
             {
-                printf("\tFile does not exist\n");
+                printf("\tFile %s does not exist. Try again.\n", path);
                 path = NULL;
             }
         }
-    }
 
-    // try to get the file path from the user
-    while(path == NULL)
-    {
-        printf("\tEnter the file path: ");
-        char input[256];
-        if(scanf("%255s", input) == 1)
+        // if wrong, try to get the file path from the user
+        while(path == NULL)
         {
-            process_path(input);
-            if(access(input, F_OK) != -1)
+            printf("\tEnter the file path: ");
+            char input[256];
+            if(fgets(input, sizeof(input), stdin) != NULL)
             {
-                path = strdup(input);
-            }
-            else
-            {
-                printf("\tFile does not exist. Try again.\n");
+                size_t len = strlen(input);
+                if(len > 0 && input[len - 1] == '\n')
+                {
+                    input[--len] = '\0';
+                }
+
+                process_path(input);
+                if(access(input, F_OK) != -1)
+                {
+                    path = strdup(input);
+
+                }
+                else
+                {
+                    printf("\tFile %s does not exist. Try again.\n", input);
+                }
             }
         }
     }
 
-    printf("\tFile path: %s\n", path);
+    // FILE MODE
+    if(path != NULL)
+    {
+        printf("\tFile path: %s\n", path);
+
+        printf("\tFILE MODE\n");
+    }
+    // NORMAL MODE
+    else
+    {
+        printf("\tNORMAL MODE\n");
+    }
 
     return EXIT_SUCCESS;
 }

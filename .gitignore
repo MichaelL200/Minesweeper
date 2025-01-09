@@ -18,3 +18,6 @@
 
 # Ignore the minesweeper executable
 minesweeper
+
+# Ignore the link to the executable
+saper

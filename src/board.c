@@ -187,7 +187,7 @@ Board board_init(Difficulty difficulty)
     return board;
 }
 
-// prints status of the board
+// print stats of the board
 void board_stats(Board* board)
 {
     printf("\tRows: %d\n", board->rows);
@@ -197,16 +197,60 @@ void board_stats(Board* board)
     printf("\tMines: %d (%d%%) \n", board->mines, percentage);
 }
 
+// random board
+board_random(Board* board)
+{
+    int mines = board->mines;
+    while(mines > 0)
+    {
+        int index = rand() % (board->rows * board->cols);
+        if(board->isMine[index] == false)
+        {
+            board->isMine[index] = true;
+            mines--;
+        }
+    }
+
+    for(int i = 0; i < board->rows; i++)
+    {
+        for(int j = 0; j < board->cols; j++)
+        {
+            int index = i * board->cols + j;
+            if(board->isMine[index] == false)
+            {
+                int count = 0;
+                for(int k = -1; k <= 1; k++)
+                {
+                    for(int l = -1; l <= 1; l++)
+                    {
+                        int x = i + k;
+                        int y = j + l;
+                        if(x >= 0 && x < board->rows && y >= 0 && y < board->cols)
+                        {
+                            int index2 = x * board->cols + y;
+                            if(board->isMine[index2] == true)
+                            {
+                                count++;
+                            }
+                        }
+                    }
+                }
+                board->adjacentMines[index] = count;
+            }
+        }
+    }
+}
+
 // print board
 void board_print(Board* board)
 {
     // print column headers
-    printf("\n\t   ");
+    printf("\n\t    ");
     for (int col = 0; col < board->cols; col++)
     {
         printf("%2d ", col);
     }
-    printf("\n\t   ");
+    printf("\n\t    ");
     for (int col = 0; col < board->cols; col++)
     {
         printf("---");
@@ -216,7 +260,7 @@ void board_print(Board* board)
     // print rows with row headers
     for (int row = 0; row < board->rows; row++)
     {
-        printf("\t%2d| ", row);
+        printf("\t%2d |", row);
         for (int col = 0; col < board->cols; col++)
         {
             int index = row * board->cols + col;
@@ -255,29 +299,106 @@ void board_print(Board* board)
     printf("\n");
 }
 
-// ask for a command
-void board_command(Board* board)
+// update the board
+void board_update(Board* board, int line_plus)
 {
-    printf("\tEnter a command: ");
-    char command[10];
-    scanf("%s", command);
-    // get the first string
-    if(strcmp(command, "f") == 0)
+    // delete lines
+    for(int i = 0; i < board->rows + 4 + line_plus; i++)
     {
-        DEBUG_PRINT("\t--- FLAG COMMAND ---\n");
-        printf("\tFlag command\n");
+        printf("\033[A\33[2K");
     }
-    else if(strcmp(command, "r") == 0)
+    if(line_plus > 0)
     {
-        DEBUG_PRINT("\t--- REVEAL COMMAND ---\n");
-        printf("\tReveal command\n");
-    }
-    else
-    {
-        DEBUG_PRINT("\t--- INVALID COMMAND ---\n");
-        printf("\tInvalid command.\n");
+        printf("\033[A\33[2K");
     }
 
+    // print the board
+    board_print(board);
+}
+
+// ask for commands
+void board_commands(Board* board)
+{
+    while(true)
+    {
+        char comm = '\0';
+        int x, y;
+        int try = 0;
+
+        // clear the buffer
+        while (getchar() != '\n');
+        // get the command
+        printf("\tEnter a command: ");
+        if(scanf(" %c %d %d", &comm, &x, &y) == 3)
+        {
+            if (comm == 'r' || comm == 'f')
+            {
+                printf("\033[A\33[2K");
+                DEBUG_PRINT("\tCOMM = %c\tX = %d\tY = %d\n", comm, x, y);
+                if (x >= 0 && x < board->rows && y >= 0 && y < board->cols)
+                {
+                    int index = x * board->cols + y;
+                    if (comm == 'r')
+                    {
+                        if(board->isRevealed[index] == true)
+                        {
+                            printf("\tCell already revealed. Please try again.\n");
+                            try = 1;
+                        }
+                        else
+                        {
+                            board->isRevealed[index] = true;
+                            board_update(board, try);
+                        }
+                    }
+                    else if (comm == 'f')
+                    {
+                        if(board->isRevealed[index] == true)
+                        {
+                            printf("\tCell already revealed. Please try again.\n");
+                            try = 1;
+                        }
+                        else if(board->isFlagged[index] == true)
+                        {
+                            board->isFlagged[index] = false;
+                            board_update(board, try);
+                        }
+                        else
+                        {
+                            board->isFlagged[index] = true;
+                            board_update(board, try);
+                        }
+                    }
+                }
+                else
+                {
+                    printf("\033[A\33[2K");
+                    printf("\tCoordinates out of bounds. Please try again.\n");
+                    try = 1;
+                }
+            }
+            else
+            {
+                printf("\033[A\33[2K");
+                if(try)
+                {
+                    printf("\033[A\33[2K");
+                }
+                printf("\tInvalid command. Please use 'r' or 'f' followed by coordinates.\n");
+                try = 1;
+            }
+        }
+        else
+        {
+            printf("\033[A\33[2K");
+            if(try)
+            {
+                printf("\033[A\33[2K");
+            }
+            printf("\tInvalid command format. Please enter command as 'r x y' or 'f x y'.\n");
+            try = 1;
+        }
+    }
 }
 
 // free board memory

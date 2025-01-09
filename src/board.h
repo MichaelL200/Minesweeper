@@ -41,14 +41,20 @@ void board_custom(Board* board);
 // initialize board
 Board board_init(Difficulty difficulty);
 
-// print status of the board
+// print stats of the board
 void board_stats(Board* board);
+
+// random board
+board_random(Board* board);
 
 // print board
 void board_print(Board* board);
 
-// ask for a command
-void board_command(Board* board);
+// update the board
+void board_update(Board* board, int line_plus);
+
+// ask for commands
+void board_commands(Board* board);
 
 // free board memory
 void board_free(Board* board);

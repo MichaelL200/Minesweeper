@@ -33,11 +33,14 @@ int main(int argc, char *argv[])
         // print board stats
         board_stats(&board);
 
+        // random board
+        board_random(&board);
+
         // print board
         board_print(&board);
 
-        // ask for a command
-        board_command(&board);
+        // ask for commands
+        board_commands(&board);
 
         // free board memory
         board_free(&board);

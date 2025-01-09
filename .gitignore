@@ -16,8 +16,8 @@
 *.pdf
 *.docx
 
-# Ignore the minesweeper executable
+# Minesweeper executable
 minesweeper
 
-# Ignore the link to the executable
+# Link to the executable
 saper

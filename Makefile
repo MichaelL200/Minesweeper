@@ -1,5 +1,6 @@
-CC = gcc
+CC = cc
 CFLAGS = -Wall -Wextra -Wuninitialized -g
+DEBUG = -DDEBUG
 
 EXEC = minesweeper
 LINK = saper
@@ -17,6 +18,9 @@ $(LINK): $(EXEC)
 
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+debug:
+	$(CC) -o $(EXEC) $(SRC) $(CFLAGS) $(DEBUG)
 
 valgrind:
 	valgrind --leak-check=full ./$(EXEC) -f data/test

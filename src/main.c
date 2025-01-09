@@ -1,3 +1,4 @@
+#include "debug.h"
 #include "file.h"
 #include "board.h"
 
@@ -16,12 +17,12 @@ int main(int argc, char *argv[])
     {
         printf("\tFile path: %s\n", path);
 
-        printf("\tFILE MODE\n");
+        DEBUG_PRINT("\n\t--- FILE MODE ---");
     }
     // NORMAL MODE
     else
     {
-        printf("\tNORMAL MODE\n");
+        DEBUG_PRINT("\n\t--- NORMAL MODE ---");
 
         // get difficulty
         Difficulty difficulty = board_difficulty();

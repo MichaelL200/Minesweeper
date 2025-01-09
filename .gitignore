@@ -15,3 +15,6 @@
 # Document files
 *.pdf
 *.docx
+
+# Ignore the minesweeper executable
+minesweeper

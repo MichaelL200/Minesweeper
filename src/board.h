@@ -45,13 +45,16 @@ Board board_init(Difficulty difficulty);
 void board_stats(Board* board);
 
 // random board
-board_random(Board* board);
+void board_random(Board* board);
 
 // print board
 void board_print(Board* board);
 
 // update the board
 void board_update(Board* board, int line_plus);
+
+// reveals all the neighboring cells with no mines
+void board_reveal(Board* board, int x, int y);
 
 // ask for commands
 void board_commands(Board* board);

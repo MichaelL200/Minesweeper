@@ -198,8 +198,9 @@ void board_stats(Board* board)
 }
 
 // random board
-board_random(Board* board)
+void board_random(Board* board)
 {
+    // randomize mines
     int mines = board->mines;
     while(mines > 0)
     {
@@ -211,6 +212,7 @@ board_random(Board* board)
         }
     }
 
+    // calculate adjacent mines for each cell
     for(int i = 0; i < board->rows; i++)
     {
         for(int j = 0; j < board->cols; j++)
@@ -316,6 +318,31 @@ void board_update(Board* board, int line_plus)
     board_print(board);
 }
 
+// reveals all the neighboring cells with no mines
+void board_reveal(Board* board, int x, int y)
+{
+    for(int i = -1; i <= 1; i++)
+    {
+        for(int j = -1; j <= 1; j++)
+        {
+            int x2 = x + i;
+            int y2 = y + j;
+            if(x2 >= 0 && x2 < board->rows && y2 >= 0 && y2 < board->cols)
+            {
+                int index = x2 * board->cols + y2;
+                if(board->isRevealed[index] == false)
+                {
+                    board->isRevealed[index] = true;
+                    if(board->adjacentMines[index] == 0)
+                    {
+                        board_reveal(board, x2, y2);
+                    }
+                }
+            }
+        }
+    }
+}
+
 // ask for commands
 void board_commands(Board* board)
 {
@@ -335,9 +362,9 @@ void board_commands(Board* board)
             {
                 printf("\033[A\33[2K");
                 DEBUG_PRINT("\tCOMM = %c\tX = %d\tY = %d\n", comm, x, y);
-                if (x >= 0 && x < board->rows && y >= 0 && y < board->cols)
+                if (y >= 0 && y < board->rows && x >= 0 && x < board->cols)
                 {
-                    int index = x * board->cols + y;
+                    int index = y * board->cols + x;
                     if (comm == 'r')
                     {
                         if(board->isRevealed[index] == true)
@@ -348,6 +375,16 @@ void board_commands(Board* board)
                         else
                         {
                             board->isRevealed[index] = true;
+                            if(board->isMine[index] == true)
+                            {
+                                board_update(board, try);
+                                printf("\tGame over! You hit a mine.\n");
+                                break;
+                            }
+                            else if(board->adjacentMines[index] == 0)
+                            {
+                                board_reveal(board, y, x);
+                            }
                             board_update(board, try);
                         }
                     }

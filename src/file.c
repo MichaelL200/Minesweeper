@@ -60,6 +60,7 @@ char* file_mode(int argc, char *argv[])
 {
     int opt;
     char* path = NULL;
+    int lines = 0;
 
     while((opt = getopt(argc, argv, "f:" )) != -1)
     {
@@ -73,7 +74,9 @@ char* file_mode(int argc, char *argv[])
             // check if the file exists
             if(!file_exists(path))
             {
-                printf("\tFile %s does not exist. Try again.\n", path);
+                printf("\033[A\33[2K");
+                printf("\n\tFile %s does not exist. Try again.\n", path);
+                lines++;
                 path = NULL;
             }
         }
@@ -82,6 +85,7 @@ char* file_mode(int argc, char *argv[])
         while(path == NULL)
         {
             printf("\tEnter the file path: ");
+            lines++;
             char input[256];
             if(fgets(input, sizeof(input), stdin) != NULL)
             {
@@ -99,10 +103,25 @@ char* file_mode(int argc, char *argv[])
                 }
                 else
                 {
+                    printf("\033[A\33[2K");
+                    if(lines)
+                    {
+                        printf("\033[A\33[2K");
+                        lines--;
+                    }
                     printf("\tFile %s does not exist. Try again.\n", input);
                 }
             }
         }
+    }
+
+    for(int i = 0; i < lines; i++)
+    {
+        printf("\033[A\33[2K");
+    }
+    if(lines)
+    {
+        printf("\033[A\33[2K");
     }
 
     return path;

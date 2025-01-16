@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     // FILE MODE
     if(path != NULL)
     {
-        printf("\tFile path: %s\n", path);
+        printf("\n\tFile path: %s\n\n", path);
 
         DEBUG_PRINT("\n\t--- FILE MODE ---");
     }

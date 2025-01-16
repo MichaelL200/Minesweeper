@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
         // initialize the board
         board = file_board_init(path);
 
-        file_commands(path);
+        // 
+        file_commands(path, &board);
 
-        board_reveal_all(&board);
         board_print(&board, false);
 
         DEBUG_PRINT("\n\t--- FILE MODE ---");

@@ -18,6 +18,6 @@ char* file_mode(int argc, char *argv[]);
 Board file_board_init(char* path);
 
 // read commands and update the board
-void file_commands(char* path);
+void file_commands(char* path, Board* board);
 
 #endif // FILE_H

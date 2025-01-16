@@ -217,7 +217,7 @@ Board file_board_init(char* path)
 }
 
 // read commands and update the board
-void file_commands(char* path)
+void file_commands(char* path, Board* board)
 {
     printf("\n");
 
@@ -263,19 +263,27 @@ void file_commands(char* path)
         // sleep for a while
         usleep(150000);
 
+        int index = x + board->cols * y;
+
         switch (comm)
         {
             case 'r':
-                printf("\tReveal cell at (%d, %d)\n", x, y);
-                // Add code to reveal the cell at (x, y)
+                printf("\tReveal cell at (%d, %d)\n\n", x, y);
+                board->isRevealed[index] = true;
+                board_reveal(board, x, y);
                 break;
             case 'f':
-                printf("\tFlag cell at (%d, %d)\n", x, y);
-                // Add code to flag the cell at (x, y)
-                break;
-            case 'u':
-                printf("\tUnflag cell at (%d, %d)\n", x, y);
-                // Add code to unflag the cell at (x, y)
+                if(board->isFlagged[index])
+                {
+                    printf("\tUnflag cell at (%d, %d)\n\n", x, y);
+                    board->isFlagged[index] = false;
+                }
+                else
+                {
+                    printf("\tFlag cell at (%d, %d)\n\n", x, y);
+                    board->isFlagged[index] = true;
+                }
+                board->isFlagged[index] = true;
                 break;
             default:
                 fprintf(stderr, "\tUnknown command: %c\n", comm);

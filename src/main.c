@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +34,8 @@ int main(int argc, char *argv[])
         // print board stats
         board_stats(&board);
 
+        // seed the random number generator with the current time 
+        srand(time(NULL)); 
         // random board
         board_random(&board);
 

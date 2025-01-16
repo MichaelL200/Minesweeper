@@ -335,6 +335,7 @@ void board_reveal(Board* board, int x, int y)
                     board->isRevealed[index] = true;
                     if(board->adjacentMines[index] == 0)
                     {
+                        // recurrence
                         board_reveal(board, x2, y2);
                     }
                 }
@@ -351,6 +352,7 @@ void board_commands(Board* board)
         char comm = '\0';
         int x, y;
         int try = 0;
+        bool is_first_revealed = false;
 
         // clear the buffer
         while (getchar() != '\n');
@@ -372,8 +374,21 @@ void board_commands(Board* board)
                             printf("\tCell already revealed. Please try again.\n");
                             try = 1;
                         }
+                        else if(board->isFlagged[index] == true)
+                        {
+                            printf("\tThe cell is flagged. Unflag to reveal.\n");
+                            try = 1;
+                        }
                         else
                         {
+                            // the first revealed cell has to be without mine
+                            // and has to have 0 adjacent mines
+                            if(!is_first_revealed && (board->isMine[index] == true
+                               || board->adjacentMines[index] != 0))
+                            {
+                                    board_random(board);
+                            }
+                            is_first_revealed = true;
                             board->isRevealed[index] = true;
                             if(board->isMine[index] == true)
                             {

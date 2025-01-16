@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     else
     {
         DEBUG_PRINT("\n\t--- NORMAL MODE ---");
-
+        
         // get difficulty
         Difficulty difficulty = board_difficulty();
 
@@ -46,6 +46,9 @@ int main(int argc, char *argv[])
 
         // get the name and write the score to the scoreboard
         score_name(board.score);
+        
+        // show the scoreboard
+        score_print();
 
         // free board memory
         board_free(&board);

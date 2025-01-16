@@ -199,16 +199,21 @@ void board_stats(Board* board)
 }
 
 // random board
-void board_random(Board* board, int first_index)
+void board_random(Board* board, int first_x, int first_y)
 {
     // randomize mines
     int mines_placed = 0;
     while(mines_placed < board->mines)
     {
-        int index = rand() % (board->cols * board->rows);
+        int x = rand() % board->cols;
+        int y = rand() % board->rows;
+        int index = x + y * board->cols;
 
-        // place the mines only if it's not in the first index
-        if(board->isMine[index] == false && index != first_index)
+        /* place the mines only if it's not in the first index *
+         * and there are no mines in the closest area          */
+        if(board->isMine[index] == false &&
+           x != first_x - 1 && x != first_x && x != first_x + 1 &&
+           y != first_y - 1 && y != first_y && y != first_y + 1)
         {
             board->isMine[index] = true;
             mines_placed++;
@@ -216,9 +221,9 @@ void board_random(Board* board, int first_index)
     }
 
     // calculate adjacent mines for each cell
-    for(int r = 0; r < board->rows; r++)
+    for(int c = 0; c < board->cols; c++)
     {
-        for(int c = 0; c < board->cols; c++)
+        for(int r = 0; r < board->rows; r++)
         {
             int index = r * board->cols + c;
             if(board->isMine[index] == false)
@@ -372,10 +377,11 @@ void board_commands(Board* board)
 
                     if (comm == 'r')
                     {
-                        /* the first revealed cell has to be without mine */
+                        /* the first revealed cell has to be without mine *
+                         * and is not to have mines nearby                */
                         if(!board->isFirstRevealed)
                         {
-                            board_random(board, index);
+                            board_random(board, x, y);
                             board->isFirstRevealed = true;
                         }
 

@@ -11,6 +11,7 @@ typedef struct
     int rows;
     int cols;
     int mines;
+    int multiplier;
 } Difficulty;
 
 // Game board structure
@@ -20,11 +21,13 @@ typedef struct
     int rows;
     int cols;
     int mines;
+    int multiplier;
     bool* isMine;
     int* adjacentMines;
     bool* isRevealed;
     bool* isFlagged;
     bool isFirstRevealed;
+    int score;
 } Board;
 
 // declare difficulty levels

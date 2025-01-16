@@ -5,10 +5,10 @@
 #include <stdlib.h>
 
 // assign values to difficulty levels
-Difficulty EASY = {"Easy", 9, 9, 10};
-Difficulty MEDIUM = {"Medium", 16, 16, 40};
-Difficulty HARD = {"Hard", 16, 30, 99};
-Difficulty CUSTOM = {"Custom", 0, 0, 0};
+Difficulty EASY = {"Easy", 9, 9, 10, 1};
+Difficulty MEDIUM = {"Medium", 16, 16, 40, 2};
+Difficulty HARD = {"Hard", 16, 30, 99, 3};
+Difficulty CUSTOM = {"Custom", 0, 0, 0, 1};
 
 // get difficulty
 Difficulty board_difficulty()
@@ -49,6 +49,7 @@ Difficulty board_difficulty()
                 {
                     case 1:
                         difficulty = EASY;
+
                         break;
                     case 2:
                         difficulty = MEDIUM;
@@ -77,6 +78,7 @@ Difficulty board_difficulty()
 // ask user for custom board
 void board_custom(Board* board)
 {
+    // ask for rows
     int tried = 0;
     while(board->rows < 1 || board->rows > 100)
     {
@@ -99,6 +101,7 @@ void board_custom(Board* board)
         tried++;
     }
 
+    // ask for columns
     tried = 0;
     while(board->cols < 1 || board->cols > 100)
     {
@@ -119,8 +122,10 @@ void board_custom(Board* board)
         tried++;
     }
 
+    // ask for number of mines
     tried = 0;
-    int max_mines = board->rows * board->cols - 1;
+    int max_mines = board->rows * board->cols - 9;
+    board->mines = 0;
     while(board->mines < 1 || board->mines > max_mines)
     {
         if(tried > 0)
@@ -139,6 +144,24 @@ void board_custom(Board* board)
         }
         tried++;
     }
+
+    // calculate multiplier
+    int cells = board->rows * board->cols;
+    int percentage = (board->mines * 100) / cells;
+    board->multiplier = 1;
+    if(cells >= 81 && percentage >= 12)
+    {
+        board->multiplier++;
+        if(cells >= 256 && percentage >= 15)
+        {
+            board->multiplier++;
+            if(cells >= 480 && percentage >= 20)
+            {
+                board->multiplier++;
+            }
+        }
+    }
+
     for(int i = 0; i < 3 + tried; i++)
     {
         printf("\033[A\33[2K");
@@ -161,6 +184,7 @@ Board board_init(Difficulty difficulty)
         board.rows = difficulty.rows;
         board.cols = difficulty.cols;
         board.mines = difficulty.mines;
+        board.multiplier = difficulty.multiplier;
     }
 
     board.isMine = (bool*)malloc(board.rows * board.cols * sizeof(bool));
@@ -184,6 +208,7 @@ Board board_init(Difficulty difficulty)
         board.isFlagged[i] = false;
     }
     board.isFirstRevealed = false;
+    board.score = 0;
 
     return board;
 }
@@ -196,6 +221,7 @@ void board_stats(Board* board)
     printf("\tTotal cells: %d\n", board->rows * board->cols);
     int percentage = (board->mines * 100) / (board->rows * board->cols);
     printf("\tMines: %d (%d%%) \n", board->mines, percentage);
+    printf("\tMultiplier: %d \n", board->multiplier);
 }
 
 // random board
@@ -306,14 +332,17 @@ void board_print(Board* board)
         }
         printf("\n");
     }
-    printf("\n");
+    printf("\n\n");
+
+    // show the score
+    printf("\tScore: %d\n\n", board->score);
 }
 
 // update the board
 void board_update(Board* board, int line_plus)
 {
     // delete lines
-    for(int i = 0; i < board->rows + 4 + line_plus; i++)
+    for(int i = 0; i < board->rows + 6 + line_plus; i++)
     {
         printf("\033[A\33[2K");
     }
@@ -345,6 +374,7 @@ void board_reveal(Board* board, int x, int y)
                     {
                         // recurrence
                         board_reveal(board, x2, y2);
+                        board->score += board->multiplier;
                     }
                 }
             }

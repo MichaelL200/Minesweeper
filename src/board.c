@@ -278,7 +278,7 @@ void board_random(Board* board, int first_x, int first_y)
 }
 
 // print board
-void board_print(Board* board)
+void board_print(Board* board, bool isScore)
 {
     // print column headers
     printf("\n\t    ");
@@ -335,7 +335,10 @@ void board_print(Board* board)
     printf("\n");
 
     // show the score
-    printf("\tScore: %d\n\n", board->score);
+    if(isScore)
+    {
+        printf("\tScore: %d\n\n", board->score);
+    }
 }
 
 // update the board
@@ -352,7 +355,7 @@ void board_update(Board* board, int line_plus)
     }
 
     // print the board
-    board_print(board);
+    board_print(board, true);
 }
 
 // reveals all the neighboring cells with no mines

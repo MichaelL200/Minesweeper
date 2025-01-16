@@ -138,14 +138,14 @@ Board file_board_init(char* path)
     FILE* file = fopen(path, "r");
     if (file == NULL)
     {
-        fprintf(stderr, "Error when opening file: %s\n", path);
+        fprintf(stderr, "\tError when opening file: %s\n", path);
         exit(EXIT_FAILURE);
     }
 
     // get the rows, cols, mines from the path
     if (fscanf(file, "%d %d %d", &board.rows, &board.cols, &board.mines) != 3)
     {
-        fprintf(stderr, "Error when reading the board data: %s (r, c, m)\n", path);
+        fprintf(stderr, "\tError when reading the board data: %s (r, c, m)\n", path);
         fclose(file);
         exit(EXIT_FAILURE);
     }
@@ -160,7 +160,7 @@ Board file_board_init(char* path)
     board.isMine = (bool*)malloc(board.rows * board.cols * sizeof(bool));
     if (!board.adjacentMines || !board.isMine)
     {
-        fprintf(stderr, "Memory allocation failed!\n");
+        fprintf(stderr, "\tMemory allocation failed!\n");
         fclose(file);
         exit(EXIT_FAILURE);
     }
@@ -175,7 +175,7 @@ Board file_board_init(char* path)
             char element[3];
             if (fscanf(file, "%s", element) != 1)
             {
-                fprintf(stderr, "Error when reading board data at (%d, %d)\n", r, c);
+                fprintf(stderr, "\tError when reading board data at (%d, %d)\n", r, c);
                 fclose(file);
                 exit(EXIT_FAILURE);
             }
@@ -192,15 +192,12 @@ Board file_board_init(char* path)
             }
             else
             {
-                fprintf(stderr, "Invalid element: %s at (%d, %d)\n", element, r, c);
+                fprintf(stderr, "\tInvalid element: %s at (%d, %d)\n", element, r, c);
                 fclose(file);
                 exit(EXIT_FAILURE);
             }
         }
     }
-
-    // close the file
-    fclose(file);
 
     // initialize isRevealed
     board.isRevealed = (bool*)malloc(board.rows * board.cols * sizeof(bool));
@@ -217,4 +214,81 @@ Board file_board_init(char* path)
     }
 
     return board;
+}
+
+// read commands and update the board
+void file_commands(char* path)
+{
+    printf("\n");
+
+    // open the file
+    FILE* file = fopen(path, "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "\tError when opening file: %s\n", path);
+        exit(EXIT_FAILURE);
+    }
+
+    // skip the board data
+    int rows, cols, mines;
+    if (fscanf(file, "%d %d %d", &rows, &cols, &mines) != 3)
+    {
+        fprintf(stderr, "\tError when reading the board data: %s (r, c, m)\n", path);
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+    // skip the newline
+    fgetc(file);
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
+        {
+            char element = '\0';
+            if (fscanf(file, " %c", &element) != 1)
+            {
+                fprintf(stderr, "\tError when reading board data at (%d, %d)\n", r, c);
+                fclose(file);
+                exit(EXIT_FAILURE);
+            }
+        }
+        // skip the newline at the end of each row
+        fgetc(file);
+    }
+
+    // read and process commands from the file
+    char comm;
+    int x, y;
+    while (fscanf(file, " %c %d %d", &comm, &x, &y) == 3)
+    {
+        // sleep for a while
+        usleep(150000);
+
+        switch (comm)
+        {
+            case 'r':
+                printf("\tReveal cell at (%d, %d)\n", x, y);
+                // Add code to reveal the cell at (x, y)
+                break;
+            case 'f':
+                printf("\tFlag cell at (%d, %d)\n", x, y);
+                // Add code to flag the cell at (x, y)
+                break;
+            case 'u':
+                printf("\tUnflag cell at (%d, %d)\n", x, y);
+                // Add code to unflag the cell at (x, y)
+                break;
+            default:
+                fprintf(stderr, "\tUnknown command: %c\n", comm);
+                fclose(file);
+                exit(EXIT_FAILURE);
+        }
+    }
+
+    if (!feof(file))
+    {
+        fprintf(stderr, "\tError when reading commands from file: %s\n", path);
+    }
+
+    // close the file
+    fclose(file);
 }

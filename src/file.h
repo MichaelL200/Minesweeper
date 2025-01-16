@@ -17,4 +17,7 @@ char* file_mode(int argc, char *argv[]);
 // initialize board for file mode
 Board file_board_init(char* path);
 
+// read commands and update the board
+void file_commands(char* path);
+
 #endif // FILE_H

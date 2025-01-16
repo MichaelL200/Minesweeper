@@ -14,16 +14,20 @@ int main(int argc, char *argv[])
     // get path for file mode (-f option)
     char* path = file_mode(argc, argv);
 
+    Board board;
+
     // FILE MODE
     if(path != NULL)
     {
         printf("\n\tFile path: %s\n\n", path);
 
         // initialize the board
-        Board board = file_board_init(path);
+        board = file_board_init(path);
+
+        file_commands(path);
 
         board_reveal_all(&board);
-        board_print(&board);
+        board_print(&board, false);
 
         DEBUG_PRINT("\n\t--- FILE MODE ---");
     }
@@ -36,7 +40,7 @@ int main(int argc, char *argv[])
         Difficulty difficulty = board_difficulty();
 
         // initialize the board
-        Board board = board_init(difficulty);
+        board = board_init(difficulty);
 
         // print board stats
         board_stats(&board);
@@ -45,7 +49,7 @@ int main(int argc, char *argv[])
         srand(time(NULL));
 
         // print board
-        board_print(&board);
+        board_print(&board, true);
 
         // ask for commands
         board_commands(&board);
@@ -55,10 +59,10 @@ int main(int argc, char *argv[])
         
         // show the scoreboard
         score_print();
-
-        // free board memory
-        board_free(&board);
     }
+
+    // free board memory
+    board_free(&board);
 
     return EXIT_SUCCESS;
 }

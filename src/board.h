@@ -52,7 +52,7 @@ void board_stats(Board* board);
 void board_random(Board* board, int first_x, int first_y);
 
 // print board
-void board_print(Board* board);
+void board_print(Board* board, bool isScore);
 
 // update the board
 void board_update(Board* board, int line_plus);

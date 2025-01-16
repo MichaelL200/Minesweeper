@@ -332,7 +332,7 @@ void board_print(Board* board)
         }
         printf("\n");
     }
-    printf("\n\n");
+    printf("\n");
 
     // show the score
     printf("\tScore: %d\n\n", board->score);
@@ -370,16 +370,31 @@ void board_reveal(Board* board, int x, int y)
                 if(board->isRevealed[index] == false)
                 {
                     board->isRevealed[index] = true;
+                    board->score += board->multiplier;
                     if(board->adjacentMines[index] == 0)
                     {
                         // recurrence
                         board_reveal(board, x2, y2);
-                        board->score += board->multiplier;
                     }
                 }
             }
         }
     }
+}
+
+// reveal all the cells
+void board_reveal_all(Board* board)
+{
+    for(int id = 0; id < board->rows * board->cols; id++)
+    {
+        board->isRevealed[id] = true;
+    }
+}
+
+// check if the player has won
+int board_check_win(Board* board)
+{
+    return board->score == board->multiplier * (board->cols * board->rows - board->mines);
 }
 
 // ask for commands
@@ -413,6 +428,15 @@ void board_commands(Board* board)
                         {
                             board_random(board, x, y);
                             board->isFirstRevealed = true;
+
+                            // a case when there is a win after the first command
+                            if(board_check_win(board))
+                            {
+                                board_reveal_all(board);
+                                board_update(board, try);
+                                printf("\tYou won!\n");
+                                break;
+                            }
                         }
 
                         if(board->isRevealed[index] == true)
@@ -428,17 +452,28 @@ void board_commands(Board* board)
                         else
                         {
                             board->isRevealed[index] = true;
+                            board->score += board->multiplier;
                             if(board->isMine[index] == true)
                             {
+                                board->score -= board->multiplier;
+                                board_reveal_all(board);
                                 board_update(board, try);
                                 printf("\tGame over! You hit a mine.\n");
                                 break;
                             }
                             else if(board->adjacentMines[index] == 0)
                             {
+                                board->score += board->multiplier;
                                 board_reveal(board, y, x);
                             }
                             board_update(board, try);
+                            if(board_check_win(board))
+                            {
+                                board_reveal_all(board);
+                                board_update(board, try);
+                                printf("\tYou won!\n");
+                                break;
+                            }
                         }
                     }
                     else if (comm == 'f')

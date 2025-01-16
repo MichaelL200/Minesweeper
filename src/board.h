@@ -60,6 +60,12 @@ void board_update(Board* board, int line_plus);
 // reveals all the neighboring cells with no mines
 void board_reveal(Board* board, int x, int y);
 
+// reveal all the cells
+void board_reveal_all(Board* board);
+
+// check if the player has won
+int board_check_win(Board* board);
+
 // ask for commands
 void board_commands(Board* board);
 

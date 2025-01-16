@@ -35,9 +35,7 @@ int main(int argc, char *argv[])
         board_stats(&board);
 
         // seed the random number generator with the current time 
-        srand(time(NULL)); 
-        // random board
-        board_random(&board);
+        srand(time(NULL));
 
         // print board
         board_print(&board);

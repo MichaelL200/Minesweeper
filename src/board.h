@@ -24,6 +24,7 @@ typedef struct
     int* adjacentMines;
     bool* isRevealed;
     bool* isFlagged;
+    bool isFirstRevealed;
 } Board;
 
 // declare difficulty levels
@@ -45,7 +46,7 @@ Board board_init(Difficulty difficulty);
 void board_stats(Board* board);
 
 // random board
-void board_random(Board* board);
+void board_random(Board* board, int index);
 
 // print board
 void board_print(Board* board);

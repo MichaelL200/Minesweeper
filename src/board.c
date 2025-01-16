@@ -183,6 +183,7 @@ Board board_init(Difficulty difficulty)
     {
         board.isFlagged[i] = false;
     }
+    board.isFirstRevealed = false;
 
     return board;
 }
@@ -198,26 +199,28 @@ void board_stats(Board* board)
 }
 
 // random board
-void board_random(Board* board)
+void board_random(Board* board, int first_index)
 {
     // randomize mines
-    int mines = board->mines;
-    while(mines > 0)
+    int mines_placed = 0;
+    while(mines_placed < board->mines)
     {
-        int index = rand() % (board->rows * board->cols);
-        if(board->isMine[index] == false)
+        int index = rand() % (board->cols * board->rows);
+
+        // place the mines only if it's not in the first index
+        if(board->isMine[index] == false && index != first_index)
         {
             board->isMine[index] = true;
-            mines--;
+            mines_placed++;
         }
     }
 
     // calculate adjacent mines for each cell
-    for(int i = 0; i < board->rows; i++)
+    for(int r = 0; r < board->rows; r++)
     {
-        for(int j = 0; j < board->cols; j++)
+        for(int c = 0; c < board->cols; c++)
         {
-            int index = i * board->cols + j;
+            int index = r * board->cols + c;
             if(board->isMine[index] == false)
             {
                 int count = 0;
@@ -225,8 +228,8 @@ void board_random(Board* board)
                 {
                     for(int l = -1; l <= 1; l++)
                     {
-                        int x = i + k;
-                        int y = j + l;
+                        int x = r + k;
+                        int y = c + l;
                         if(x >= 0 && x < board->rows && y >= 0 && y < board->cols)
                         {
                             int index2 = x * board->cols + y;
@@ -352,7 +355,6 @@ void board_commands(Board* board)
         char comm = '\0';
         int x, y;
         int try = 0;
-        bool is_first_revealed = false;
 
         // clear the buffer
         while (getchar() != '\n');
@@ -367,8 +369,16 @@ void board_commands(Board* board)
                 if (y >= 0 && y < board->rows && x >= 0 && x < board->cols)
                 {
                     int index = y * board->cols + x;
+
                     if (comm == 'r')
                     {
+                        /* the first revealed cell has to be without mine */
+                        if(!board->isFirstRevealed)
+                        {
+                            board_random(board, index);
+                            board->isFirstRevealed = true;
+                        }
+
                         if(board->isRevealed[index] == true)
                         {
                             printf("\tCell already revealed. Please try again.\n");
@@ -381,14 +391,6 @@ void board_commands(Board* board)
                         }
                         else
                         {
-                            // the first revealed cell has to be without mine
-                            // and has to have 0 adjacent mines
-                            if(!is_first_revealed && (board->isMine[index] == true
-                               || board->adjacentMines[index] != 0))
-                            {
-                                    board_random(board);
-                            }
-                            is_first_revealed = true;
                             board->isRevealed[index] = true;
                             if(board->isMine[index] == true)
                             {

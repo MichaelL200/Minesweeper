@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "file.h"
 #include "board.h"
+#include "score.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -42,6 +43,9 @@ int main(int argc, char *argv[])
 
         // ask for commands
         board_commands(&board);
+
+        // get the name and write the score to the scoreboard
+        score_name(board.score);
 
         // free board memory
         board_free(&board);

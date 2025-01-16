@@ -80,7 +80,7 @@ void board_custom(Board* board)
 {
     // ask for rows
     int tried = 0;
-    while(board->rows < 1 || board->rows > 100)
+    while(board->rows < 4 || board->rows > 100)
     {
         if(tried > 0)
         {
@@ -103,7 +103,7 @@ void board_custom(Board* board)
 
     // ask for columns
     tried = 0;
-    while(board->cols < 1 || board->cols > 100)
+    while(board->cols < 4 || board->cols > 100)
     {
         if(tried > 0)
         {
@@ -434,7 +434,7 @@ void board_commands(Board* board)
                             {
                                 board_reveal_all(board);
                                 board_update(board, try);
-                                printf("\tYou won!\n");
+                                printf("\tYou won!\n\n");
                                 break;
                             }
                         }
@@ -458,7 +458,7 @@ void board_commands(Board* board)
                                 board->score -= board->multiplier;
                                 board_reveal_all(board);
                                 board_update(board, try);
-                                printf("\tGame over! You hit a mine.\n");
+                                printf("\tGame over! You hit a mine.\n\n");
                                 break;
                             }
                             else if(board->adjacentMines[index] == 0)
@@ -471,7 +471,7 @@ void board_commands(Board* board)
                             {
                                 board_reveal_all(board);
                                 board_update(board, try);
-                                printf("\tYou won!\n");
+                                printf("\tYou won!\n\n");
                                 break;
                             }
                         }

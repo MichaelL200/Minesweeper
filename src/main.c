@@ -19,6 +19,12 @@ int main(int argc, char *argv[])
     {
         printf("\n\tFile path: %s\n\n", path);
 
+        // initialize the board
+        Board board = file_board_init(path);
+
+        board_reveal_all(&board);
+        board_print(&board);
+
         DEBUG_PRINT("\n\t--- FILE MODE ---");
     }
     // NORMAL MODE
@@ -29,7 +35,7 @@ int main(int argc, char *argv[])
         // get difficulty
         Difficulty difficulty = board_difficulty();
 
-        // initialize board
+        // initialize the board
         Board board = board_init(difficulty);
 
         // print board stats

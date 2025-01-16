@@ -1,4 +1,3 @@
-#include "debug.h"
 #include "score.h"
 #include "board.h"
 

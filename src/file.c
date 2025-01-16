@@ -1,9 +1,11 @@
 #include "file.h"
+#include "board.h"
 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 // process the file path
 void file_process_path(char* path)
@@ -125,4 +127,94 @@ char* file_mode(int argc, char *argv[])
     }
 
     return path;
+}
+
+// initialize board for file mode (without difficulty, multiplier, score, isFirstRevealed)
+Board file_board_init(char* path)
+{
+    Board board;
+
+    // open the file
+    FILE* file = fopen(path, "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "Error when opening file: %s\n", path);
+        exit(EXIT_FAILURE);
+    }
+
+    // get the rows, cols, mines from the path
+    if (fscanf(file, "%d %d %d", &board.rows, &board.cols, &board.mines) != 3)
+    {
+        fprintf(stderr, "Error when reading the board data: %s (r, c, m)\n", path);
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("\tRows: %d\n\tColumns: %d\n", board.rows, board.cols);
+    printf("\tTotal cells: %d\n", board.rows * board.rows);
+    printf("\tMines: %d (%d%%)\n",
+           board.mines, (board.mines * 100) / (board.rows * board.cols));
+
+    // initialize adjacentMines and isMine
+    board.adjacentMines = (int*)malloc(board.rows * board.cols * sizeof(int));
+    board.isMine = (bool*)malloc(board.rows * board.cols * sizeof(bool));
+    if (!board.adjacentMines || !board.isMine)
+    {
+        fprintf(stderr, "Memory allocation failed!\n");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    // assign adjacentMines and isMine values
+    for (int r = 0; r < board.rows; r++)
+    {
+        for (int c = 0; c < board.cols; c++)
+        {
+            int index = c + r * board.cols;
+
+            char element[3];
+            if (fscanf(file, "%s", element) != 1)
+            {
+                fprintf(stderr, "Error when reading board data at (%d, %d)\n", r, c);
+                fclose(file);
+                exit(EXIT_FAILURE);
+            }
+
+            if (isdigit(element[0]))
+            {
+                board.adjacentMines[index] = atoi(element);
+                board.isMine[index] = false;
+            }
+            else if (element[0] == 'X')
+            {
+                board.adjacentMines[index] = 0;
+                board.isMine[index] = true;
+            }
+            else
+            {
+                fprintf(stderr, "Invalid element: %s at (%d, %d)\n", element, r, c);
+                fclose(file);
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    // close the file
+    fclose(file);
+
+    // initialize isRevealed
+    board.isRevealed = (bool*)malloc(board.rows * board.cols * sizeof(bool));
+    for(int i = 0; i < board.rows * board.cols; i++)
+    {
+        board.isRevealed[i] = false;
+    }
+
+    // initialize isFlagged
+    board.isFlagged = (bool*)malloc(board.rows * board.cols * sizeof(bool));
+    for(int i = 0; i < board.rows * board.cols; i++)
+    {
+        board.isFlagged[i] = false;
+    }
+
+    return board;
 }

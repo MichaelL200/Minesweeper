@@ -1,6 +1,8 @@
 #ifndef FILE_H
 #define FILE_H
 
+#include "board.h"
+
 #include <stdbool.h>
 
 // process the file path
@@ -11,5 +13,8 @@ bool file_exists(const char* path);
 
 // get path for file mode (-f option)
 char* file_mode(int argc, char *argv[]);
+
+// initialize board for file mode
+Board file_board_init(char* path);
 
 #endif // FILE_H

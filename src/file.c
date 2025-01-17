@@ -269,6 +269,7 @@ void file_commands(char* path, Board* board)
     char comm;
     int x, y;
     bool game_over = false;
+    int result = 0;
 
     while(fscanf(file, " %c %d %d", &comm, &x, &y) == 3 && !game_over)
     {
@@ -296,7 +297,7 @@ void file_commands(char* path, Board* board)
                 {
                     board->score -= board->multiplier;
                     board_reveal_all(board);
-                    printf("\tGame over! Hit a mine.\n\n");
+                    result = -1;
                     break;
                 }
                 else if(board->adjacentMines[index] == 0)
@@ -306,7 +307,7 @@ void file_commands(char* path, Board* board)
                 if(board_check_win(board))
                 {
                     board_reveal_all(board);
-                    printf("\tWin!\n\n");
+                    result = 1;
                     break;
                 }
             }
@@ -341,4 +342,19 @@ void file_commands(char* path, Board* board)
 
     // close the file
     fclose(file);
+
+    // check the result
+    printf("\n");
+    if(result == 1)
+    {
+        printf("\tWin!\n\n");
+    }
+    else if(result == -1)
+    {
+        printf("\tGame over! Hit a mine.\n\n");
+    }
+    else
+    {
+        printf("\tNo win, no loss...\n\n");
+    }
 }

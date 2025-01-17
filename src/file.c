@@ -269,12 +269,12 @@ void file_commands(char* path, Board* board)
     char comm;
     int x, y;
     bool game_over = false;
-    int result = 0;
+    int result = -1;
 
     while(fscanf(file, " %c %d %d", &comm, &x, &y) == 3 && !game_over)
     {
         // sleep for a while
-        usleep(150000);
+        usleep(5000);
 
         int index = y * board->cols + x;
 
@@ -297,7 +297,7 @@ void file_commands(char* path, Board* board)
                 {
                     board->score -= board->multiplier;
                     board_reveal_all(board);
-                    result = -1;
+                    result = 0;
                     break;
                 }
                 else if(board->adjacentMines[index] == 0)
@@ -314,17 +314,19 @@ void file_commands(char* path, Board* board)
         }
         else if(comm == 'f')
         {
-            if (board->isRevealed[index] == true)
+            if(board->isRevealed[index] == true)
             {
-                printf("\tCell already revealed. Please try again.\n");
+                printf("\tCell (%d, %d) is already revealed.\n", x, y);
             }
-            else if (board->isFlagged[index] == true)
+            else if(board->isFlagged[index] == true)
             {
                 board->isFlagged[index] = false;
+                printf("\tCell (%d, %d) unflagged.\n", x, y);
             }
             else
             {
                 board->isFlagged[index] = true;
+                printf("\tCell (%d, %d) flagged.\n", x, y);
             }
         }
         else
@@ -338,6 +340,7 @@ void file_commands(char* path, Board* board)
     if (!feof(file))
     {
         fprintf(stderr, "\tError when reading commands from file: %s\n", path);
+        fprintf(stderr, "\tMaybe the game has just ended...\n");
     }
 
     // close the file
@@ -347,14 +350,14 @@ void file_commands(char* path, Board* board)
     printf("\n");
     if(result == 1)
     {
-        printf("\tWin!\n\n");
+        printf("\tWin!\t[%d]\n\n", result);
     }
-    else if(result == -1)
+    else if(result == 0)
     {
-        printf("\tGame over! Hit a mine.\n\n");
+        printf("\tGame over! Hit a mine.\t[%d]\n\n", result);
     }
     else
     {
-        printf("\tNo win, no loss...\n\n");
+        printf("\tNo win, no loss...\t[%d]\n\n", result);
     }
 }

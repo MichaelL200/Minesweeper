@@ -373,6 +373,7 @@ void board_reveal(Board* board, int x, int y)
             if(x2 >= 0 && x2 < board->cols && y2 >= 0 && y2 < board->rows)
             {
                 int index = board->cols * y2 + x2;
+
                 if(board->isRevealed[index] == false)
                 {
                     board->isRevealed[index] = true;

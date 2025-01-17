@@ -42,7 +42,7 @@ test2:
 	./$(EXEC) -f data/test2
 
 test3:
-	./$(EXEC) -f data/test3
+	./$(EXEC) -f //\data/test3//
 
 # clear - object files, executable, linker
 clear:

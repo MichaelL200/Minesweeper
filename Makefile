@@ -8,6 +8,8 @@ LINK = saper
 SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
+.PHONY: all debug valgrind test test1 test2 test3 clear clean
+
 all: $(EXEC) $(LINK)
 
 $(EXEC): $(OBJ)
@@ -39,3 +41,4 @@ test3:
 
 clear:
 	rm -f $(OBJ) $(EXEC) $(LINK)
+clean: clear

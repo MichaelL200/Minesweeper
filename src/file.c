@@ -269,6 +269,7 @@ void file_commands(char* path, Board* board)
     char comm;
     int x, y;
     bool game_over = false;
+    int correct_steps = 0;
     int result = -1;
 
     while(fscanf(file, " %c %d %d", &comm, &x, &y) == 3 && !game_over)
@@ -293,9 +294,11 @@ void file_commands(char* path, Board* board)
                 printf("\tReveal cell (%d, %d)\n", x, y);
                 board->isRevealed[index] = true;
                 board->score += board->multiplier;
+                correct_steps++;
                 if(board->isMine[index] == true)
                 {
                     board->score -= board->multiplier;
+                    correct_steps--;
                     board_reveal_all(board);
                     result = 0;
                     break;
@@ -346,8 +349,13 @@ void file_commands(char* path, Board* board)
     // close the file
     fclose(file);
 
+    // print the number of correct steps
+    printf("\n\tCorrect steps: %d\n", correct_steps);
+
+    // print the score
+    printf("\tScore: %d\n", board->score);
+
     // check the result
-    printf("\n");
     if(result == 1)
     {
         printf("\tWin!\t[%d]\n\n", result);

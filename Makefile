@@ -10,7 +10,7 @@ OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
 .PHONY: all debug valgrind test test1 test2 test3 clear clean
 
-all: $(EXEC) $(LINK)
+all: objdir $(EXEC) $(LINK)
 
 $(EXEC): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
@@ -21,12 +21,17 @@ $(LINK): $(EXEC)
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+objdir:
+	mkdir -p obj
+
+# debugging
 debug:
 	$(CC) -o $(EXEC) $(SRC) $(CFLAGS) $(DEBUG)
 
 valgrind:
 	valgrind --leak-check=full ./$(EXEC) -f data/test
 
+# tests
 test:
 	./$(EXEC) -f data/test
 
@@ -39,6 +44,10 @@ test2:
 test3:
 	./$(EXEC) -f data/test3
 
+# clear - object files, executable, linker
 clear:
 	rm -f $(OBJ) $(EXEC) $(LINK)
-clean: clear
+
+# clean - whole obj folder with object files, executable, linker
+clean:
+	rm -rf obj $(EXEC) $(LINK)

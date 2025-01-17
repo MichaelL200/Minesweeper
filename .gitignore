@@ -9,8 +9,7 @@
 *.swp
 *.tmp
 
-# Document files
-*.pdf
+# Word files
 *.docx
 
 # Minesweeper executable

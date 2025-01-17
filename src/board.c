@@ -238,8 +238,8 @@ void board_random(Board* board, int first_x, int first_y)
         /* place the mines only if it's not in the first index *
          * and there are no mines in the closest area          */
         if(board->isMine[index] == false &&
-           x != first_x - 1 && x != first_x && x != first_x + 1 &&
-           y != first_y - 1 && y != first_y && y != first_y + 1)
+           !(x >= first_x - 1 && x <= first_x + 1
+           && y >= first_y - 1 && y <= first_y + 1))
         {
             board->isMine[index] = true;
             mines_placed++;
@@ -261,9 +261,9 @@ void board_random(Board* board, int first_x, int first_y)
                     {
                         int x = r + k;
                         int y = c + l;
-                        if(x >= 0 && x < board->rows && y >= 0 && y < board->cols)
+                        if(x >= 0 && x < board->cols && y >= 0 && y < board->rows)
                         {
-                            int index2 = x * board->cols + y;
+                            int index2 = y + x * board->rows;
                             if(board->isMine[index2] == true)
                             {
                                 count++;
@@ -342,7 +342,7 @@ void board_print(Board* board, bool isScore)
 }
 
 // update the board
-void board_update(Board* board, int line_plus)
+void board_update(Board* board, int line_plus, bool isScore)
 {
     // delete lines
     for(int i = 0; i < board->rows + 6 + line_plus; i++)
@@ -355,7 +355,10 @@ void board_update(Board* board, int line_plus)
     }
 
     // print the board
-    board_print(board, true);
+    if(isScore)
+    {
+        board_print(board, true);
+    }
 }
 
 // reveals all the neighboring cells with no mines
@@ -369,7 +372,7 @@ void board_reveal(Board* board, int x, int y)
             int y2 = y + j;
             if(x2 >= 0 && x2 < board->rows && y2 >= 0 && y2 < board->cols)
             {
-                int index = x2 * board->cols + y2;
+                int index = x2 + board->cols * y2;
                 if(board->isRevealed[index] == false)
                 {
                     board->isRevealed[index] = true;
@@ -436,7 +439,7 @@ void board_commands(Board* board)
                             if(board_check_win(board))
                             {
                                 board_reveal_all(board);
-                                board_update(board, try);
+                                board_update(board, try, true);
                                 printf("\tYou won!\n\n");
                                 break;
                             }
@@ -460,20 +463,19 @@ void board_commands(Board* board)
                             {
                                 board->score -= board->multiplier;
                                 board_reveal_all(board);
-                                board_update(board, try);
+                                board_update(board, try, true);
                                 printf("\tGame over! You hit a mine.\n\n");
                                 break;
                             }
                             else if(board->adjacentMines[index] == 0)
                             {
-                                board->score += board->multiplier;
-                                board_reveal(board, y, x);
+                                board_reveal(board, x, y);
                             }
-                            board_update(board, try);
+                            board_update(board, try, true);
                             if(board_check_win(board))
                             {
                                 board_reveal_all(board);
-                                board_update(board, try);
+                                board_update(board, try, true);
                                 printf("\tYou won!\n\n");
                                 break;
                             }
@@ -489,12 +491,12 @@ void board_commands(Board* board)
                         else if(board->isFlagged[index] == true)
                         {
                             board->isFlagged[index] = false;
-                            board_update(board, try);
+                            board_update(board, try, true);
                         }
                         else
                         {
                             board->isFlagged[index] = true;
-                            board_update(board, try);
+                            board_update(board, try, true);
                         }
                     }
                 }

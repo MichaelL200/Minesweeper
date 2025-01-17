@@ -24,9 +24,10 @@ int main(int argc, char *argv[])
         // initialize the board
         board = file_board_init(path);
 
-        // 
+        // process commands
         file_commands(path, &board);
 
+        // print the gameboard
         board_print(&board, false);
 
         DEBUG_PRINT("\n\t--- FILE MODE ---");

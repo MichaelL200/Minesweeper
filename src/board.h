@@ -55,7 +55,7 @@ void board_random(Board* board, int first_x, int first_y);
 void board_print(Board* board, bool isScore);
 
 // update the board
-void board_update(Board* board, int line_plus);
+void board_update(Board* board, int line_plus, bool isScore);
 
 // reveals all the neighboring cells with no mines
 void board_reveal(Board* board, int x, int y);

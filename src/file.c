@@ -129,7 +129,7 @@ char* file_mode(int argc, char *argv[])
     return path;
 }
 
-// initialize board for file mode (without difficulty, multiplier, score, isFirstRevealed)
+// initialize board for file mode (without difficulty and isFirstRevealed)
 Board file_board_init(char* path)
 {
     Board board;
@@ -199,19 +199,29 @@ Board file_board_init(char* path)
         }
     }
 
-    // initialize isRevealed
-    board.isRevealed = (bool*)malloc(board.rows * board.cols * sizeof(bool));
-    for(int i = 0; i < board.rows * board.cols; i++)
-    {
-        board.isRevealed[i] = false;
-    }
+    // initialize isRevealed and isFlagged
+    board.isRevealed = (bool*)calloc(board.rows * board.cols, sizeof(bool));
+    board.isFlagged = (bool*)calloc(board.rows * board.cols, sizeof(bool));
 
-    // initialize isFlagged
-    board.isFlagged = (bool*)malloc(board.rows * board.cols * sizeof(bool));
-    for(int i = 0; i < board.rows * board.cols; i++)
+    board.score = 0;
+
+    // calculate multiplier
+    int cells = board.rows * board.cols;
+    int percentage = (board.mines * 100) / cells;
+    board.multiplier = 1;
+    if(cells >= 81 && percentage >= 12)
     {
-        board.isFlagged[i] = false;
+        board.multiplier++;
+        if(cells >= 256 && percentage >= 15)
+        {
+            board.multiplier++;
+            if(cells >= 480 && percentage >= 20)
+            {
+                board.multiplier++;
+            }
+        }
     }
+    printf("\tMultiplier: %d\n", board.multiplier);
 
     return board;
 }
@@ -258,37 +268,69 @@ void file_commands(char* path, Board* board)
     // read and process commands from the file
     char comm;
     int x, y;
-    while (fscanf(file, " %c %d %d", &comm, &x, &y) == 3)
+    bool game_over = false;
+
+    while(fscanf(file, " %c %d %d", &comm, &x, &y) == 3 && !game_over)
     {
         // sleep for a while
         usleep(150000);
 
-        int index = x + board->cols * y;
+        int index = y * board->cols + x;
 
-        switch (comm)
+        if(comm == 'r')
         {
-            case 'r':
-                printf("\tReveal cell at (%d, %d)\n\n", x, y);
+            if(board->isRevealed[index] == true)
+            {
+                printf("\tCell (%d, %d) already revealed.\n", x, y);
+            }
+            else if(board->isFlagged[index] == true)
+            {
+                printf("\tCell (%d, %d) is already flagged. Cant' reveal.\n", x, y);
+            }
+            else
+            {
+                printf("\tReveal cell (%d, %d)\n", x, y);
                 board->isRevealed[index] = true;
-                board_reveal(board, x, y);
-                break;
-            case 'f':
-                if(board->isFlagged[index])
+                board->score += board->multiplier;
+                if(board->isMine[index] == true)
                 {
-                    printf("\tUnflag cell at (%d, %d)\n\n", x, y);
-                    board->isFlagged[index] = false;
+                    board->score -= board->multiplier;
+                    board_reveal_all(board);
+                    printf("\tGame over! Hit a mine.\n\n");
+                    break;
                 }
-                else
+                else if(board->adjacentMines[index] == 0)
                 {
-                    printf("\tFlag cell at (%d, %d)\n\n", x, y);
-                    board->isFlagged[index] = true;
+                    board_reveal(board, x, y);
                 }
+                if(board_check_win(board))
+                {
+                    board_reveal_all(board);
+                    printf("\tWin!\n\n");
+                    break;
+                }
+            }
+        }
+        else if(comm == 'f')
+        {
+            if (board->isRevealed[index] == true)
+            {
+                printf("\tCell already revealed. Please try again.\n");
+            }
+            else if (board->isFlagged[index] == true)
+            {
+                board->isFlagged[index] = false;
+            }
+            else
+            {
                 board->isFlagged[index] = true;
-                break;
-            default:
-                fprintf(stderr, "\tUnknown command: %c\n", comm);
-                fclose(file);
-                exit(EXIT_FAILURE);
+            }
+        }
+        else
+        {
+            fprintf(stderr, "\tUnknown command: %c\n", comm);
+            fclose(file);
+            exit(EXIT_FAILURE);
         }
     }
 

@@ -25,5 +25,17 @@ debug:
 valgrind:
 	valgrind --leak-check=full ./$(EXEC) -f data/test
 
+test:
+	./$(EXEC) -f data/test
+
+test1:
+	./$(EXEC) -f data/test1
+
+test2:
+	./$(EXEC) -f data/test2
+
+test3:
+	./$(EXEC) -f data/test3
+
 clear:
 	rm -f $(OBJ) $(EXEC) $(LINK)

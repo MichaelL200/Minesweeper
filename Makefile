@@ -8,13 +8,11 @@ LINK = saper
 SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
-.PHONY: all debug valgrind test test1 test2 test3 clear clean
+.PHONY: all objdir debug valgrind test test1 test2 test3 clear clean
 
 all: objdir $(EXEC) $(LINK)
-
 $(EXEC): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
-
 $(LINK): $(EXEC)
 	ln -sf $(EXEC) $(LINK)
 
@@ -32,16 +30,16 @@ valgrind:
 	valgrind --leak-check=full ./$(EXEC) -f data/test
 
 # tests
-test:
+test: all
 	./$(EXEC) -f data/test
 
-test1:
+test1: all
 	./$(EXEC) -f data/test1
 
-test2:
+test2: all
 	./$(EXEC) -f data/test2
 
-test3:
+test3: all
 	./$(EXEC) -f //\data/test3//
 
 # clear - object files, executable, linker

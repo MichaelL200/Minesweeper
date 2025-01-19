@@ -151,7 +151,7 @@ Board file_board_init(char* path)
     }
 
     printf("\tRows: %d\n\tColumns: %d\n", board.rows, board.cols);
-    printf("\tTotal cells: %d\n", board.rows * board.rows);
+    printf("\tTotal cells: %d\n", board.rows * board.cols);
     printf("\tMines: %d (%d%%)\n",
            board.mines, (board.mines * 100) / (board.rows * board.cols));
 
